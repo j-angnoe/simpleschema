@@ -1,0 +1,7 @@
+topics:
+    name name
+
+users:
+    name name
+    password varchar(50)
+

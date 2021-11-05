@@ -1,0 +1,11 @@
+posts:
+    name varchar(50)
+    content text 
+    topic_id references topics.id
+
+comments:
+    content text
+    user_id references users.id
+    post_id references posts.id
+
+    

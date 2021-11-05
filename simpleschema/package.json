@@ -1,0 +1,6 @@
+{
+    "name": "php-simpleschema",
+    "bin": {
+        "simpleschema": "./bin/simpleschema"
+    }
+}

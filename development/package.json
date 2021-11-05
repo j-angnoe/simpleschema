@@ -1,0 +1,16 @@
+{
+    "name": "simpleschema-dev",
+    "simpleschema": {
+        "DB_HOST": "localhost",
+        "DB_PORT": "9836",
+        "DB_USERNAME": "root",
+        "DB_PASSWORD": "password",
+        "DB_DATABASE": "simpleschema_db"
+    },
+    "scripts": {
+        "start": "docker-compose up",
+        "stop": "docker-compose stop",
+        "install:executable" : "npm link --prefix ../simpleschema",
+        "uninstall:executable" : "npm unlink --prefix ../simpleschema"
+    }
+}
