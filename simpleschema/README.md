@@ -5,7 +5,7 @@ with a schema defined in file(s).
 
 When designing models, or while prototyping, you may need to perform
 a lot of schema changes. You might be familiar with database migration
-solutions offered by popular frameworks, while this method is offers
+solutions offered by popular frameworks, while this method offers
 high accuracy and reproducability, it become tidious when you don't
 get the migration step right the first time.
 
