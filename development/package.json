@@ -10,7 +10,7 @@
     "scripts": {
         "start": "docker-compose up",
         "stop": "docker-compose stop",
-        "install:executable" : "npm link --prefix ../simpleschema",
-        "uninstall:executable" : "npm unlink --prefix ../simpleschema"
+        "install:executable" : "cd ../simpleschema; npm link ",
+        "uninstall:executable" : "cd ../simpleschema; npm unlink"
     }
 }

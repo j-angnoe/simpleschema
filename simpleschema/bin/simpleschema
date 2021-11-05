@@ -203,7 +203,7 @@ $controller = new class {
      * Display manual
      */
     function man() {
-        echo file_get_contents(__DIR__ . '/../readme.md');
+        echo file_get_contents(__DIR__ . '/../README.md');
     }
 };
 

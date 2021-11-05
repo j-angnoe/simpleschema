@@ -1,0 +1,17 @@
+{
+    "name": "joshua/simpleschema",
+    "description": "Sync mysql database schemas with file based schemas.",
+    "type": "tool",
+    "license": "MIT",
+    "bin": ["simpleschema/bin/simpleschema"],
+    "authors": [
+        {
+            "name": "Joshua Angnoe",
+            "email": "joshua@fluxfx.nl"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {        
+        "php" : ">=7.4"
+    }
+}
