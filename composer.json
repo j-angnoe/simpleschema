@@ -1,5 +1,5 @@
 {
-    "name": "joshua/simpleschema",
+    "name": "j-angnoe/simpleschema",
     "description": "Sync mysql database schemas with file based schemas.",
     "type": "tool",
     "license": "MIT",
