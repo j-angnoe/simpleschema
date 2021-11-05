@@ -13,5 +13,8 @@
     "minimum-stability": "dev",
     "require": {        
         "php" : ">=7.4"
+    },
+    "archive": {
+        "exclude": ["/development"]
     }
 }
