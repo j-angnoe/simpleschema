@@ -63,10 +63,17 @@ class CliController {
     }
 
     /**
-     * scan the current project for simpleschema files.
+     * scan the current project for simpleschema files,
+     * excluded directories: node_modules, build, dist, vendor, .git and .cache
      */
     function ls() { 
-        $schemas = explode("\n", trim(`find . -type f -name '*.simpleschema.*'`));
+        // @todo - these must become a setting of sorts.
+        $excludeDirs = ['node_modules','build','dist','vendor','.cache', '.git'];
+
+        $findCommand = "find . -type d \( " . join(' -o ', array_map(fn($n) => '-name '.$n, $excludeDirs)) ." \) -prune -false -o -type f -name '*.simpleschema*'";
+
+
+        $schemas = explode("\n", trim(`$findCommand`));
 
         return $schemas;
     }
