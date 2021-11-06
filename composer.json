@@ -16,5 +16,8 @@
     },
     "archive": {
         "exclude": ["/development"]
+    },
+    "autoload" : {
+        "classmap" : ["simpleschema/src"]
     }
 }
