@@ -4,8 +4,7 @@ namespace SimpleSchema;
 
 use SimpleSchema\SimpleSchema;
 use SimpleSchema\DB;
-use SimpleSchema\TableDefinition;
-
+use ReflectionClass;
 
 require_once __DIR__ . '/SimpleSchema.php';
 
