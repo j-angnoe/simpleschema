@@ -98,3 +98,7 @@ into logical parts and distribute these files inside your codebase.
 Use `simpleschema ls` to list all the simpleschema files in a project.
 Use `simpleschema cat` to view the combined output of all the files.
 
+# Note on FULLTEXT
+if you use fulltext columns, we cannot use temporary tables for comparison.
+It will create a full table postfixed with the term `_simpleschema_tmp`.
+This still needs to be cleaned up at some point.

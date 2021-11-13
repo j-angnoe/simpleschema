@@ -289,7 +289,7 @@ class SimpleSchema {
             },  $type_extra);            
                         
             // Handle index definitions:
-            $type_extra = preg_replace_callback('/^(?<idx_type>index|unique|unique index)(\s*\((?<idx_fields>[^\)]+)\))/i', function ($match) use ($key, &$fieldIndices) {
+            $type_extra = preg_replace_callback('/^(?<idx_type>index|unique|unique index|fulltext key)(\s*\((?<idx_fields>[^\)]+)\))/i', function ($match) use ($key, &$fieldIndices) {
                 $idx_name = $key;
                 $idx_fields = preg_split('/\s*,\s*/', $match['idx_fields']);
                 $idx_type = strtolower($match['idx_type']);
@@ -310,7 +310,7 @@ class SimpleSchema {
                     $type_extra = 'INTEGER UNSIGNED';
                 } else { 
                     try {
-                        $type_extra = $this->grabAll("DESCRIBE `{$table}_tmp` `$field`")[0]['Type'] . " " . ltrim($match['extra'] ?? '');
+                        $type_extra = $this->grabAll("DESCRIBE `{$table}_simpleschema_tmp` `$field`")[0]['Type'] . " " . ltrim($match['extra'] ?? '');
 
                     } catch (\Exception $e) { 
                         error_log("Error at foreign key $key $type_extra... writing an unsigned int: " . $e->getMessage());
@@ -359,14 +359,15 @@ class SimpleSchema {
     private function processFields_Stage2($def) {
         $table = $this->table;
 
-        $tmpTable = $table . '_tmp';
+        $tmpTable = $table . '_simpleschema_tmp';
 
-        $this->db()->exec("DROP TEMPORARY TABLE IF EXISTS $tmpTable;");
+        
 
         $tmpStatement = [];
 
         $foreignKeyLines = [];
 
+        $useTemporaryTable = true;
         foreach ($def->parse() as $line) { 
             if ($line['class'] === 'key') {
                 switch (strtolower($line['key_type'])) {
@@ -379,22 +380,38 @@ class SimpleSchema {
                     case 'unique key':
                     case 'key':
                     case 'index':
+                    case 'fulltext key':
+
+                        $useTemporaryTable = false;
+
                         $tmpStatement[] = "\t{$line['full']}";
                     break;
+                    default:
+                        throw new \Exception('Cannot handle ' . $line['key_type']);
                 }
             } else {
-
                 $tmpStatement[] = "\t{$line['full']}";
             }
         }
 
+        $this->db()->exec("DROP TEMPORARY TABLE IF EXISTS $tmpTable;");
+        $this->db()->exec("DROP TABLE IF EXISTS $tmpTable;");
+
         $tmpStatement = join(",\n\t", $tmpStatement) . "\n) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
+
+        // echo $tmpStatement;
 
         if (!preg_match('/AUTO_INCREMENT|PRIMARY KEY/i', $tmpStatement)) {
             $tmpStatement = "\n\tid INTEGER PRIMARY KEY AUTO_INCREMENT,\n\t" . $tmpStatement;
         }
 
-        $tmpStatement = "CREATE TEMPORARY TABLE $tmpTable (" . $tmpStatement;
+        if ($useTemporaryTable) { 
+            $tmpStatement = "CREATE TEMPORARY TABLE $tmpTable (" . $tmpStatement;
+        } else {
+            error_log($table . ' uses fulltext, using a non-temporary table instead.');
+
+            $tmpStatement = "CREATE TABLE $tmpTable (" . $tmpStatement;
+        }
 
         try { 
             iterator_to_array($this->query($tmpStatement));
@@ -427,10 +444,10 @@ class SimpleSchema {
 
         } catch (\PDOException $e) { 
             // error_log("Created table");
-            // $createTable = $this->grabAll("CREATE TABLE `$table` LIKE `{$table}_tmp`");
+            // $createTable = $this->grabAll("CREATE TABLE `$table` LIKE `{$table}_simpleschema_tmp`");
 
-            $createTable = $this->grabAll("SHOW CREATE TABLE `{$table}_tmp`")[0]['Create Table'];
-            $modifications[] = str_replace(["CREATE TEMPORARY ", "`{$table}_tmp`"], ["CREATE ","`$table`"], $createTable);
+            $createTable = $this->grabAll("SHOW CREATE TABLE `{$table}_simpleschema_tmp`")[0]['Create Table'];
+            $modifications[] = str_replace(["CREATE TEMPORARY ", "`{$table}_simpleschema_tmp`"], ["CREATE ","`$table`"], $createTable);
 
             $def->setSql($createTable);
         }

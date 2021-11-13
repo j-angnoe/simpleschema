@@ -136,10 +136,10 @@ class TableDefinition {
 
     function parseLine($line) {
 
-        if ($key = get_preg_match($line, '~^\s*(CONSTRAINT|PRIMARY KEY|UNIQUE KEY|FULLTEXT KEY|UNIQUE|KEY|INDEX)\s*(`(.+?)`)*(.+)~i')) {
-            list(, $key_type, , $id) = $key;
+        if ($key = get_preg_match($line, '~^\s*(CONSTRAINT|PRIMARY KEY|UNIQUE KEY|FULLTEXT KEY|UNIQUE|KEY|INDEX)\s*(`(.+?)`)*(.+)~i')) {            
+            list(, $key_type, , $id, $extra) = $key;
             return [
-                '@id' => 'key:'.$key_type.':'.$id,
+                '@id' => 'key:'.$key_type.':'.($id ?: $extra),
                 'class' => 'key',
                 'key_type' => $key_type,
                 'id' => $id,
@@ -203,6 +203,7 @@ class TableDefinition {
 
         $addedFields = array_diff_key($newFields, $sharedFields);
 
+        
         $modifiedFields = array_filter($sharedFields, function($field) use ($oldFields) {
             $fieldPos = $field['position'] ?? '';
             $oldPos = $oldFields[$field['@id']]['position'] ?? '';
