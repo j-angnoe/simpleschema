@@ -143,8 +143,14 @@ class CliController {
             if (strtolower($char) === 'q') {
                 $queries[] = $query;
             } else {
-                $db->exec($query);
-                error_log('Executing...');
+                try { 
+                    $db->exec($query);
+                    error_log('Executing...');
+                } catch (\Exception $e) { 
+                    error_log("Query-error: " . $e->getMessage());
+                    error_log('Query will be appended to queue for later execution');
+                    $queries[] = $query;
+                }
             }
             $query = next($queries);
         }
