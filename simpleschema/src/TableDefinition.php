@@ -212,7 +212,13 @@ class TableDefinition {
             $fieldNormal = preg_replace('~\s(CHARACTER SET|COLLATE) \w+~', '', $field['full']);
             $oldFieldNormal = preg_replace('~\s(CHARACTER SET|COLLATE) \w+~', '', $oldFields[$field['@id']]['full']);
 
-            $modified = !($fieldNormal === $oldFieldNormal && $fieldPos === $oldPos);
+            // Normalize spaces
+            $fieldNormal = preg_replace('~\s+~', ' ', $fieldNormal);
+            $oldFieldNormal = preg_replace('~\s+~', ' ', $oldFieldNormal);
+
+            // Perform case insensitive comparison.
+            $modified = !(strcasecmp($fieldNormal, $oldFieldNormal) === 0 && strcasecmp($fieldPos, $oldPos) === 0);
+
 
             // for debugging:
             // if ($modified) { 
