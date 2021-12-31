@@ -208,7 +208,21 @@ class TableDefinition {
             $fieldPos = $field['position'] ?? '';
             $oldPos = $oldFields[$field['@id']]['position'] ?? '';
 
-            return !($field['full'] === $oldFields[$field['@id']]['full'] && $fieldPos === $oldPos);
+            // Dont trigger on COLLATION/CHARACTER SET stuff.
+            $fieldNormal = preg_replace('~\s(CHARACTER SET|COLLATE) \w+~', '', $field['full']);
+            $oldFieldNormal = preg_replace('~\s(CHARACTER SET|COLLATE) \w+~', '', $oldFields[$field['@id']]['full']);
+
+            $modified = !($fieldNormal === $oldFieldNormal && $fieldPos === $oldPos);
+
+            // for debugging:
+            // if ($modified) { 
+            //     echo "\n\n\n";
+            //     echo $fieldNormal."\n";                
+            //     echo $oldFieldNormal."\n";                
+            //     echo "\n\n\n";
+            // }
+
+            return $modified;
         });
 
         foreach ($addedFields as $ax => $a) {
@@ -235,7 +249,7 @@ class TableDefinition {
 
     function getSqlDiff($lines) {
         $mutations = $this->compare($lines);
-
+        
         $lines = [];
         foreach ($mutations['modified'] as $s_field => $s) {
             $fn = $s['class'] . '_modify';

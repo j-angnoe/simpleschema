@@ -319,7 +319,7 @@ class SimpleSchema {
                     }    
                 }
 
-                $fieldIndices["fk_{$key}_{$table}_{$field}"] = [
+                $fieldIndices["fk_{$this->table}_{$table}_{$field}"] = [
                     'type' => 'foreign_key',
                     'foreign_key' => $key,
                     'references' => [$table, $field],
@@ -376,13 +376,13 @@ class SimpleSchema {
                         $foreignKeyLines[] = "KEY `{$line['id']}` $fk";
                         $foreignKeyLines[] = "\t{$line['full']}";
                     break;
+                    case 'fulltext key':
+                        $useTemporaryTable = false;
+
                     case 'unique':
                     case 'unique key':
                     case 'key':
                     case 'index':
-                    case 'fulltext key':
-
-                        $useTemporaryTable = false;
 
                         $tmpStatement[] = "\t{$line['full']}";
                     break;

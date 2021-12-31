@@ -114,6 +114,43 @@ class CliController {
         return $obj->run();
     }
 
+    /**
+     * Synchronize the database schema with the
+     * simpleschema files interactively.
+     * See each query will be prompted.
+     */
+    function run_interactive() {
+        $content = $this->cat();
+        $this->load_settings();
+
+        $obj = SimpleSchema::format($content);
+
+        system("stty -icanon");
+
+        $db = DB::getPdoConnection();
+
+        $queries = $obj->diff();
+
+        print_r($queries);
+
+        while(false !== ($query = current($queries))) {
+            error_log('Query: ' . $query);
+
+            $char = fread(STDIN, 1);
+
+            error_log('Press any key to execute, press Q to queue this query');
+
+            if (strtolower($char) === 'q') {
+                $queries[] = $query;
+            } else {
+                $db->exec($query);
+                error_log('Executing...');
+            }
+            $query = next($queries);
+        }
+
+    }
+
     private function load_settings() { 
         if (!(isset($_ENV['DB_HOST']) || isset($_ENV['DB_USERNAME']))) { 
             $settings = collect_settings();
